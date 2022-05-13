@@ -107,9 +107,19 @@
         this.todoList.push({ name: this.name, todo: this.todo });
         this.name = this.todo = "";
       },
-      remove_todo: function (index) {
+      remove_todo: function (todo, index) {
         console.log("remove_todo()...", index);
-        this.todoList.splice(index, 1);
+
+        var vm = this;
+        axios
+          .delete("/api/todo/" + todo.id + "/delete/")
+          .then(function (res) {
+            console.log("DELETE RES", res);
+            vm.todoList.splice(index, 1);
+          })
+          .catch(function (err) {
+            console.log("DELETE ERR", err);
+          });
       },
     },
   });

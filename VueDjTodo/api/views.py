@@ -1,6 +1,9 @@
+from ast import Delete
 from django.http import JsonResponse
-from django.views.generic import ListView
+from django.views.generic import ListView, DeleteView
 from todo.models import Todo
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 
 # Create your views here.
 class ApiTodoLV(ListView):
@@ -18,3 +21,13 @@ class ApiTodoLV(ListView):
   def render_to_response(self, context, **response_kwargs):
     todoList = list(context['object_list'].values())
     return JsonResponse(data=todoList, safe=False)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ApiTodoDelV(DeleteView):
+  model = Todo
+
+  def delete(self, request, *args, **kwargs):
+    self.object = self.get_object()
+    self.object.delete()
+    return JsonResponse(data={}, status=204)
